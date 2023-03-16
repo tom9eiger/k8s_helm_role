@@ -1,0 +1,48 @@
+---
+# tasks file for .
+- name: Ensure helm is installed on {{ os_family }}
+  when: ansible_pkg_mgr == 'apt'
+  block:
+
+    - name: Ensure apt-transport-https is installed
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - gpg
+          - python3-pip
+
+    - name: Ensure APT Key for HELM is in place
+      ansible.builtin.apt_key:
+        url: https://baltocdn.com/helm/signing.asc
+        state: present
+
+    - name: Ensure Repo is configured for HELM
+      ansible.builtin.apt_repository:
+        repo: deb https://baltocdn.com/helm/stable/debian/ all main
+        mode: 644
+        filename: helm.list
+        state: present
+        update_cache: true
+
+    - name: Ensure Helm is installed
+      ansible.builtin.apt:
+        name:
+          - helm
+
+- name: Ensure kubernetes python module is installed
+  ansible.builtin.pip:
+    name:
+      - kubernetes
+    state: present
+
+- name: Include helm tasks
+  loop: "{{ helm_charts }}"
+  vars:
+    namespace: "{{ item.namespace }}"
+    repo_name: "{{ item.repo_name | default('omit') }}"
+    repo_url: "{{ item.repo_url | default('omit') }}"
+    deployment_name: "{{ item.deployment_name }}"
+    chart_ref: "{{ item.deployment_name }}"
+    chart_value: "{{ item.chart_value | default('omit') }}"
+  ansible.builtin.include_tasks:
+    file: helm.yml

@@ -1,0 +1,4 @@
+---
+# defaults file for k8s-helm-role
+kube_config: "{{ lookup('ansible.builtin.env', 'KUEBECONFIG') | defaults('~/.kube/config') }}"
+helm_charts: "{{ helm_chart }}"
