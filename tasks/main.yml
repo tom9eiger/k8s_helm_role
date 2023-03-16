@@ -42,7 +42,7 @@
     repo_name: "{{ item.repo_name | default('omit') }}"
     repo_url: "{{ item.repo_url | default('omit') }}"
     deployment_name: "{{ item.deployment_name }}"
-    chart_ref: "{{ item.deployment_name }}"
+    chart_ref: "{{ item.chart_ref }}"
     chart_value: "{{ item.chart_value | default('omit') }}"
   ansible.builtin.include_tasks:
     file: helm.yml

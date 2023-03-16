@@ -14,7 +14,7 @@
     repo_name: "{{ repo_name }}"
     repo_url: "{{ repo_url }}"
 
-- name: Ensure helm chart is added {{ name }}
+- name: Ensure helm chart is added {{ deployment_name }}
   kubernetes.core.helm:
     kubeconfig: "{{ kube_config }}"
     release_namespace: "{{ namespace }}"
