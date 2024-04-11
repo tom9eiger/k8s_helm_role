@@ -1,6 +1,6 @@
 ---
 # tasks file for .
-- name: Ensure helm is installed on {{ os_family }}
+- name: Start block HELM - APT
   when: ansible_pkg_mgr == 'apt'
   block:
 
@@ -16,7 +16,7 @@
         url: https://baltocdn.com/helm/signing.asc
         state: present
 
-    - name: Ensure Repo is configured for HELM
+    - name: Ensure APT Repo is configured for HELM 
       ansible.builtin.apt_repository:
         repo: deb https://baltocdn.com/helm/stable/debian/ all main
         mode: 644
@@ -24,10 +24,19 @@
         state: present
         update_cache: true
 
-    - name: Ensure Helm is installed
+    - name: Ensure Helm is installed with APT
       ansible.builtin.apt:
         name:
           - helm
+
+- name: Ensure Helm is installed on RHEL
+  when: ansible_pkg_mgr == 'dnf'
+  ansible.builtin.get_url:
+    url: https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-linux-amd64
+    dest: /usr/local/sbin/helm
+    mode: "0755"
+    owner: root
+    group: root
 
 - name: Ensure kubernetes python module is installed
   ansible.builtin.pip:
